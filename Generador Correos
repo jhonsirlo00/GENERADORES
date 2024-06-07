@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Correos y Contraseñas</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .container {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .output {
+            white-space: pre-wrap;
+            background: #e9ecef;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            margin-top: 20px;
+            border-radius: 8px;
+        }
+        .form-control:focus {
+            border-color: #80bdff;
+            box-shadow: 0 0 5px rgba(128, 189, 255, 0.8);
+        }
+        .btn-clear {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center mb-4">Generador de Correos y Contraseñas</h1>
+        <form id="generateForm">
+            <div class="form-group">
+                <label for="domain">Dominio:</label>
+                <input type="text" id="domain" name="domain" class="form-control" placeholder="ej. thorwidex01.com" required>
+            </div>
+            <div class="form-group">
+                <label for="quantity">Cantidad:</label>
+                <input type="number" id="quantity" name="quantity" class="form-control" min="1" max="500" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Generar</button>
+        </form>
+        <button id="clearOutput" class="btn btn-secondary btn-block btn-clear">Limpiar Resultados</button>
+        <div id="output" class="output mt-4"></div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        document.getElementById('generateForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const domain = document.getElementById('domain').value;
+            const quantity = parseInt(document.getElementById('quantity').value);
+            const output = document.getElementById('output');
+
+            const names = ["juan", "maria", "carlos", "ana", "luis", "laura", "jose", "sofia", "pablo", "marta"];
+            const surnames = ["perez", "lopez", "gonzalez", "martinez", "rodriguez", "fernandez", "gomez", "diaz", "sanchez", "torres"];
+
+            function generatePassword(length = 8) {
+                const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()';
+                let password = '';
+                for (let i = 0; i < length; i++) {
+                    password += characters.charAt(Math.floor(Math.random() * characters.length));
+                }
+                return password;
+            }
+
+            const generatedEmails = new Set();
+            const generatedPasswords = new Set();
+
+            let result = '';
+            for (let i = 0; i < quantity; i++) {
+                let email, password;
+
+                // Generate unique email
+                do {
+                    const name = names[Math.floor(Math.random() * names.length)];
+                    const surname = surnames[Math.floor(Math.random() * surnames.length)];
+                    const number = Math.floor(Math.random() * 900) + 100;
+                    email = `${name}.${surname}${number}@${domain}`;
+                } while (generatedEmails.has(email));
+                generatedEmails.add(email);
+
+                // Generate unique password
+                do {
+                    password = generatePassword();
+                } while (generatedPasswords.has(password));
+                generatedPasswords.add(password);
+
+                result += `${email} | Contraseña: ${password}\n`;
+            }
+
+            output.textContent = result;
+        });
+
+        document.getElementById('clearOutput').addEventListener('click', function () {
+            document.getElementById('output').textContent = '';
+        });
+    </script>
+</body>
+</html>
